@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:lontongistic/widgets/inventory_button.dart';
+import 'package:lontongistic/widgets/left_drawer.dart';
 
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({Key? key}) : super(key: key);
-  final List<InventoryItem> items = [
-    InventoryItem("Lihat Produk", Icons.checklist, Colors.gre),
-    InventoryItem("Tambah Produk", Icons.add_shopping_cart, Colors.yellow),
-    InventoryItem("Logout", Icons.logout, Colors.green),
+  final List<InventoryButton> items = [
+    InventoryButton("Your Inventory", Icons.checklist, Colors.green),
+    InventoryButton("Add Item", Icons.add_box, Colors.lightGreen),
+    InventoryButton("Logout", Icons.logout, Colors.lightGreenAccent),
   ];
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -23,7 +25,10 @@ class MyHomePage extends StatelessWidget {
         title: const Text(
           'Lontongistic',
         ),
+        backgroundColor: Colors.lightGreen,
+        foregroundColor: Colors.white,
       ),
+      drawer: const LeftDrawer(),
       body: SingleChildScrollView(
         // Widget wrapper yang dapat discroll
         child: Padding(
@@ -52,65 +57,12 @@ class MyHomePage extends StatelessWidget {
                 mainAxisSpacing: 10,
                 crossAxisCount: 3,
                 shrinkWrap: true,
-                children: items.map((InventoryItem item) {
+                children: items.map((InventoryButton item) {
                   // Iterasi untuk setiap item
                   return InventoryCard(item);
                 }).toList(),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class InventoryItem {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  InventoryItem(this.name, this.icon, this.color);
-}
-
-class InventoryCard extends StatelessWidget {
-  final InventoryItem item;
-
-  const InventoryCard(this.item, {super.key}); // Constructor
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: item.color,
-      child: InkWell(
-        // Area responsive terhadap sentuhan
-        onTap: () {
-          // Memunculkan SnackBar ketika diklik
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!")));
-        },
-        child: Container(
-          // Container untuk menyimpan Icon dan Text
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
           ),
         ),
       ),
