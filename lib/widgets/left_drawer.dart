@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lontongistic/screens/list_product.dart';
 import 'package:lontongistic/screens/menu.dart';
 import 'package:lontongistic/screens/add_item_form.dart';
-import 'package:lontongistic/screens/inventory_list.dart';
+
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -65,21 +65,8 @@ class LeftDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.list),
-            title: const Text('Your Inventory'),
-            // Bagian redirection ke InventoryList
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const InventoryList(),
-                ),
-              );
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.shopping_basket),
-            title: const Text('Daftar Produk'),
+            title: const Text('Your Inventory'),
             onTap: () {
               // Route menu ke halaman produk
               Navigator.push(
