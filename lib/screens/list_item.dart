@@ -39,59 +39,68 @@ Future<List<Item>> fetchitem() async {
 @override
 Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-        title: const Text('Item'),
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+          'Your Inventory',
+          )
         ),
-        drawer: const LeftDrawer(),
-        body: FutureBuilder(
-            future: fetchitem(),
-            builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.data == null) {
-                    return const Center(child: CircularProgressIndicator());
-                } else {
-                    if (!snapshot.hasData) {
-                    return const Column(
+        backgroundColor: Colors.lightGreen,
+        foregroundColor: Colors.white,
+      ),
+      drawer: const LeftDrawer(),
+      body: FutureBuilder(
+        future: fetchitem(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.data == null) {
+              return const Center(child: CircularProgressIndicator());
+          } else {
+              if (!snapshot.hasData) {
+              return const Column(
+                  children: [
+                  Text(
+                      "There's no item.",
+                      style:
+                          TextStyle(color: Color(0xff59A5D8), fontSize: 20),
+                  ),
+                  SizedBox(height: 8),
+                  ],
+              );
+          } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (_, index) => Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: InkWell(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])),
+                      )
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                        Text(
-                            "There's no item.",
-                            style:
-                                TextStyle(color: Color(0xff59A5D8), fontSize: 20),
-                        ),
-                        SizedBox(height: 8),
+                          Text(
+                            "${snapshot.data![index].fields.name}",
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text("Amount : ${snapshot.data![index].fields.amount}"),
                         ],
-                    );
-                } else {
-                    return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (_, index) => Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 12),
-                                padding: const EdgeInsets.all(20.0),
-                                child: InkWell(
-                                  onTap: () => {
-                                    Navigator.push(
-                                      context, 
-                                      MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])))
-                                  },
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                        Text(
-                                        "${snapshot.data![index].fields.name}",
-                                        style: const TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                        ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text("Amount : ${snapshot.data![index].fields.amount}"),
-                                    ],
-                                    ),
-                                )
-                            ));
-                    }
-                }
-            }));
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+          }
+      }));
     }
 }

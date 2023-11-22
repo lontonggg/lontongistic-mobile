@@ -919,7 +919,7 @@ class Fields {
 - Memuat file `list_item.dart` pada `lib/screens` dan import library yang diperlukan sehingga berisi seperti berikut :
 
   ```dart
-  // ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
+    // ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
 
   import 'package:flutter/material.dart';
   import 'package:http/http.dart' as http;
@@ -960,60 +960,69 @@ class Fields {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-          appBar: AppBar(
-          title: const Text('Item'),
+        appBar: AppBar(
+          title: const Center(
+            child: Text(
+            'Your Inventory',
+            )
           ),
-          drawer: const LeftDrawer(),
-          body: FutureBuilder(
-              future: fetchitem(),
-              builder: (context, AsyncSnapshot snapshot) {
-                  if (snapshot.data == null) {
-                      return const Center(child: CircularProgressIndicator());
-                  } else {
-                      if (!snapshot.hasData) {
-                      return const Column(
+          backgroundColor: Colors.lightGreen,
+          foregroundColor: Colors.white,
+        ),
+        drawer: const LeftDrawer(),
+        body: FutureBuilder(
+          future: fetchitem(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.data == null) {
+                return const Center(child: CircularProgressIndicator());
+            } else {
+                if (!snapshot.hasData) {
+                return const Column(
+                    children: [
+                    Text(
+                        "There's no item.",
+                        style:
+                            TextStyle(color: Color(0xff59A5D8), fontSize: 20),
+                    ),
+                    SizedBox(height: 8),
+                    ],
+                );
+            } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (_, index) => Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: InkWell(
+                      onTap: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])),
+                        )
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          Text(
-                              "There's no item.",
-                              style:
-                                  TextStyle(color: Color(0xff59A5D8), fontSize: 20),
-                          ),
-                          SizedBox(height: 8),
+                            Text(
+                              "${snapshot.data![index].fields.name}",
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text("Amount : ${snapshot.data![index].fields.amount}"),
                           ],
-                      );
-                  } else {
-                      return ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (_, index) => Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 12),
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: InkWell(
-                                    onTap: () => {
-                                      Navigator.push(
-                                        context, 
-                                        MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])))
-                                    },
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                          Text(
-                                          "${snapshot.data![index].fields.name}",
-                                          style: const TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.bold,
-                                          ),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Text("Amount : ${snapshot.data![index].fields.amount}"),
-                                      ],
-                                      ),
-                                  )
-                              ));
-                      }
-                  }
-              }));
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }
+        }));
       }
   }
   ```
@@ -1027,20 +1036,23 @@ class Fields {
 
   -  ### Tampilkan name, amount, dan description dari masing-masing item pada halaman ini.
   ```dart
-   child: Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-        Text(
-        "${snapshot.data![index].fields.name}",
-        style: const TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-        ),
-        ),
-        const SizedBox(height: 10),
-        Text("Amount : ${snapshot.data![index].fields.amount}"),
-    ],
+    child: Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "${snapshot.data![index].fields.name}",
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text("Amount : ${snapshot.data![index].fields.amount}"),
+        ],
+      ),
     ),
   ```
 
@@ -1057,54 +1069,67 @@ class Fields {
   class DetailItem extends StatelessWidget {
     final Item item;
 
-    const DetailItem(this.item, {super.key});
+    const DetailItem(this.item, {Key? key}) : super(key: key);
 
     @override
-    Widget build(BuildContext context){
+    Widget build(BuildContext context) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Lontongistic',
+          title: const Center(
+            child: Text(
+              'Lontongistic',
+            ),
           ),
           backgroundColor: Colors.lightGreen,
           foregroundColor: Colors.white,
         ),
-        drawer: LeftDrawer(),
-        body: Padding(
-          padding: EdgeInsets.all(5),
-          child : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height : 10),
-              Text("Amount : ${item.fields.amount}"),
-              Text("Category : ${item.fields.category}"),
-              Text("Date Added : ${item.fields.dateAdded}"),
-              const SizedBox(height: 10),
-              Text("${item.fields.description}"),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.lightGreen),
-                    ),
-                    onPressed: (){
-                      Navigator.push(
-                        context, 
-                        MaterialPageRoute(builder: (context) => ItemPage()));
-                    },
-                    child: const Text(
-                      "Back",
-                      style: TextStyle(color: Colors.white),
+        drawer: const LeftDrawer(),
+        body: Center(
+          child: Card(
+            margin: const EdgeInsets.all(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "${item.fields.name}",
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                  Text("Amount: ${item.fields.amount}"),
+                  Text("Category: ${item.fields.category}"),
+                  Text("Date Added: ${item.fields.dateAdded}"),
+                  const SizedBox(height: 10),
+                  Text("${item.fields.description}"),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.lightGreen),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ItemPage()),
+                        );
+                      },
+                      child: const Text(
+                        "Back",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ), 
-        )
+            ),
+          ),
+        ),
       );
     }
   }
@@ -1113,51 +1138,87 @@ class Fields {
   
   - Membuat tombol untuk pergi ke halaman `detail_item.dart` pada `list_item.dart`:
   ```dart
-  child: InkWell(
-    onTap: () => {
-      Navigator.push(
-        context, 
-        MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])))
-    },
-  )
+  return ListView.builder(
+    itemCount: snapshot.data!.length,
+    itemBuilder: (_, index) => Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: InkWell(
+        onTap: () => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])),
+          )
+        },
   ```
   - ### Tampilkan seluruh atribut pada model item kamu pada halaman ini.
     ```dart
-    body: Padding(
-      padding: EdgeInsets.all(5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height : 10),
-          Text("Amount : ${item.fields.amount}"),
-          Text("Category : ${item.fields.category}"),
-          Text("Date Added : ${item.fields.dateAdded}"),
-          const SizedBox(height: 10),
-          Text("${item.fields.description}"),
-        ],
-      )
-    )
+    child: Card(
+          margin: const EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "${item.fields.name}",
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text("Amount: ${item.fields.amount}"),
+                Text("Category: ${item.fields.category}"),
+                Text("Date Added: ${item.fields.dateAdded}"),
+                const SizedBox(height: 10),
+                Text("${item.fields.description}"),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.lightGreen),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ItemPage()),
+                      );
+                    },
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
     ```
   - ### Tambahkan tombol untuk kembali ke halaman daftar item.
   ```dart
-    child: ElevatedButton(
-      style: ButtonStyle(
-        backgroundColor:
-            MaterialStateProperty.all(Colors.lightGreen),
-      ),
-      onPressed: (){
-        Navigator.push(
-          context, 
-          MaterialPageRoute(builder: (context) => ItemPage()));
-      },
+    Align(
+      alignment: Alignment.bottomCenter,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor:
+              MaterialStateProperty.all(Colors.lightGreen),
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ItemPage()),
+          );
+        },
         child: const Text(
-        "Back",
-        style: TextStyle(color: Colors.white),
+          "Back",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     ),
   ```
-
-
 </details>
 
 
