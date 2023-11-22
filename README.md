@@ -623,8 +623,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def login(request):
-    username = request.POST.get('username')
-    password = request.POST.get('password')
+    username = request.POST['username']
+    password = request.POST['password']
     user = authenticate(username=username, password=password)
     if user is not None:
         if user.is_active:
@@ -1026,7 +1026,7 @@ class Fields {
       }
   }
   ```
- - Mengubah fungsi tombol `Lihat Produk` pada `inventory_button.dart` agar melakukan redirection ke halaman `ItemPage` :
+ - Mengubah fungsi tombol `Lihat Produk` pada `inventory_button.dart` agar melakukan redirection ke halaman `ProductPage` :
 
   ```dart
   else if(item.name == "Your Inventory") {
