@@ -154,7 +154,7 @@ class _AddItemFormPageState extends State<AddItemFormPage> {
                             "https://reyhan-zada-tugas.pbp.cs.ui.ac.id/create-flutter/",
                             jsonEncode(<String, String>{
                                 'name': _name,
-                                'price': _amount.toString(),
+                                'amount': _amount.toString(),
                                 'category':_category,
                                 'description': _description,
                             }));

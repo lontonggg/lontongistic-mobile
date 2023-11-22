@@ -43,7 +43,7 @@ class InventoryCard extends StatelessWidget {
           }
           else if (item.name == "Logout") {
             final response = await request.logout(
-                "https://reyhan-zada-tugas.pbp.cs.ui.ac.id/auth/logout/");
+                "https://reyhan-zada-tugas.pbp.cs.ui.ac.id/logout/");
             String message = response["message"];
             if (response['status']) {
               String uname = response["username"];
