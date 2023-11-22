@@ -827,27 +827,31 @@ class _LoginPageState extends State<LoginPage> {
 
 - Mengambil endpoint JSON pada tugas sebelumnya dengan menjalankan `localhost:8000/json` setelah menjalankan server, dan menggunakan website `Quicktype` untuk mengubahnya kedalam bahasa Dart.
 
-- Membuat folder baru bernama `models` dan membuat file `product.dart` sebagai model dan menambahkan kode dari website `Quicktype`:
+- Membuat folder baru bernama `models` dan membuat file `item.dart` sebagai model dan menambahkan kode dari website `Quicktype`:
 
 ```dart
+// To parse this JSON data, do
+//
+//     final Item = ItemFromJson(jsonString);
+
 import 'dart:convert';
 
-List<Product> productFromJson(String str) => List<Product>.from(json.decode(str).map((x) => Product.fromJson(x)));
+List<Item> itemFromJson(String str) => List<Item>.from(json.decode(str).map((x) => Item.fromJson(x)));
 
-String productToJson(List<Product> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String itemToJson(List<Item> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Product {
+class Item {
     String model;
     int pk;
     Fields fields;
 
-    Product({
+    Item({
         required this.model,
         required this.pk,
         required this.fields,
     });
 
-    factory Product.fromJson(Map<String, dynamic> json) => Product(
+    factory Item.fromJson(Map<String, dynamic> json) => Item(
         model: json["model"],
         pk: json["pk"],
         fields: Fields.fromJson(json["fields"]),
@@ -912,195 +916,246 @@ class Fields {
 ...
 ```
 
-- Memuat file `list_product.dart` pada `lib/screens` dan import library yang diperlukan sehingga berisi seperti berikut :
+- Memuat file `list_item.dart` pada `lib/screens` dan import library yang diperlukan sehingga berisi seperti berikut :
 
-```dart
-// ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
+  ```dart
+  // ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
 
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:lontongistic/models/product.dart';
-import 'package:lontongistic/widgets/left_drawer.dart';
+  import 'package:flutter/material.dart';
+  import 'package:http/http.dart' as http;
+  import 'dart:convert';
+  import 'package:lontongistic/models/item.dart';
+  import 'package:lontongistic/screens/detail_item.dart';
+  import 'package:lontongistic/widgets/left_drawer.dart';
 
-class ProductPage extends StatefulWidget {
-    const ProductPage({Key? key}) : super(key: key);
+  class ItemPage extends StatefulWidget {
+      const ItemPage({Key? key}) : super(key: key);
 
-    @override
-    _ProductPageState createState() => _ProductPageState();
-}
+      @override
+      _ItemPageState createState() => _ItemPageState();
+  }
 
-class _ProductPageState extends State<ProductPage> {
-Future<List<Product>> fetchProduct() async {
-    var url = Uri.parse(
-        'https://reyhan-zada-tugas.pbp.cs.ui.ac.id/json/');
-    var response = await http.get(
-        url,
-        headers: {"Content-Type": "application/json"},
-    );
+  class _ItemPageState extends State<ItemPage> {
+  Future<List<Item>> fetchitem() async {
+      var url = Uri.parse(
+          'https://reyhan-zada-tugas.pbp.cs.ui.ac.id/json/');
+      var response = await http.get(
+          url,
+          headers: {"Content-Type": "application/json"},
+      );
 
-    // melakukan decode response menjadi bentuk json
-    var data = jsonDecode(utf8.decode(response.bodyBytes));
+      // melakukan decode response menjadi bentuk json
+      var data = jsonDecode(utf8.decode(response.bodyBytes));
 
-    // melakukan konversi data json menjadi object Product
-    List<Product> list_product = [];
-    for (var d in data) {
-        if (d != null) {
-            list_product.add(Product.fromJson(d));
-        }
-    }
-    return list_product;
-}
+      // melakukan konversi data json menjadi object item
+      List<Item> list_item = [];
+      for (var d in data) {
+          if (d != null) {
+              list_item.add(Item.fromJson(d));
+          }
+      }
+      return list_item;
+  }
 
-@override
-Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-        title: const Text('Product'),
-        ),
-        drawer: const LeftDrawer(),
-        body: FutureBuilder(
-            future: fetchProduct(),
-            builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.data == null) {
-                    return const Center(child: CircularProgressIndicator());
-                } else {
-                    if (!snapshot.hasData) {
-                    return const Column(
-                        children: [
-                        Text(
-                            "Tidak ada data produk.",
-                            style:
-                                TextStyle(color: Color(0xff59A5D8), fontSize: 20),
-                        ),
-                        SizedBox(height: 8),
-                        ],
-                    );
-                } else {
-                    return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (_, index) => Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 12),
-                                padding: const EdgeInsets.all(20.0),
-                                child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                    Text(
-                                    "${snapshot.data![index].fields.name}",
-                                    style: const TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                    ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text("${snapshot.data![index].fields.price}"),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                        "${snapshot.data![index].fields.description}")
-                                ],
-                                ),
-                            ));
-                    }
-                }
-            }));
-    }
-}
-```
+  @override
+  Widget build(BuildContext context) {
+      return Scaffold(
+          appBar: AppBar(
+          title: const Text('Item'),
+          ),
+          drawer: const LeftDrawer(),
+          body: FutureBuilder(
+              future: fetchitem(),
+              builder: (context, AsyncSnapshot snapshot) {
+                  if (snapshot.data == null) {
+                      return const Center(child: CircularProgressIndicator());
+                  } else {
+                      if (!snapshot.hasData) {
+                      return const Column(
+                          children: [
+                          Text(
+                              "There's no item.",
+                              style:
+                                  TextStyle(color: Color(0xff59A5D8), fontSize: 20),
+                          ),
+                          SizedBox(height: 8),
+                          ],
+                      );
+                  } else {
+                      return ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (_, index) => Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 12),
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: InkWell(
+                                    onTap: () => {
+                                      Navigator.push(
+                                        context, 
+                                        MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])))
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                          Text(
+                                          "${snapshot.data![index].fields.name}",
+                                          style: const TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold,
+                                          ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Text("Amount : ${snapshot.data![index].fields.amount}"),
+                                      ],
+                                      ),
+                                  )
+                              ));
+                      }
+                  }
+              }));
+      }
+  }
+  ```
+ - Mengubah fungsi tombol `Lihat Produk` pada `inventory_button.dart` agar melakukan redirection ke halaman `ProductPage` :
+
+  ```dart
+  else if(item.name == "Your Inventory") {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemPage()));
+            }
+  ```
+
   -  ### Tampilkan name, amount, dan description dari masing-masing item pada halaman ini.
   ```dart
-  ...
-      return ListView.builder(
-        itemCount: snapshot.data!.length,
-        itemBuilder: (_, index) => Container(
-                margin: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                    Text(
-                    "${snapshot.data![index].fields.name}",
-                    style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                    ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text("${snapshot.data![index].fields.amount}"),
-                      const SizedBox(height: 10),
-                    Text("${snapshot.data![index].fields.category}"),
-                    const SizedBox(height: 10),
-                    Text(
-                        "${snapshot.data![index].fields.description}")
-                ],
-                ),
-            ));
-      ...
+   child: Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+        Text(
+        "${snapshot.data![index].fields.name}",
+        style: const TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+        ),
+        ),
+        const SizedBox(height: 10),
+        Text("Amount : ${snapshot.data![index].fields.amount}"),
+    ],
+    ),
   ```
+
 - ### Membuat halaman detail untuk setiap item yang terdapat pada halaman daftar Item.
-  - ### Halaman ini dapat diakses dengan menekan salah satu item pada halaman daftar Item.
-  - Menambahkan halaman `list_product.dart` ke drawer dengan menambahkan kode berikut pada `widgets/left_drawer.dart` :
-
+  - Membuat file baru pada folder `screens` bernama `detail_item.dart` yang berisi details dari item:
   ```dart
-  ListTile(
-            leading: const Icon(Icons.shopping_basket),
-            title: const Text('Your Inventory'),
-            onTap: () {
-              // Route menu ke halaman produk
-              Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProductPage()),
-              );
-            },
+    // ignore_for_file: unnecessary_string_interpolations, prefer_const_constructors
+
+  import 'package:flutter/material.dart';
+  import 'package:lontongistic/models/item.dart';
+  import 'package:lontongistic/screens/list_item.dart';
+  import 'package:lontongistic/widgets/left_drawer.dart';
+
+  class DetailItem extends StatelessWidget {
+    final Item item;
+
+    const DetailItem(this.item, {super.key});
+
+    @override
+    Widget build(BuildContext context){
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Lontongistic',
           ),
+          backgroundColor: Colors.lightGreen,
+          foregroundColor: Colors.white,
+        ),
+        drawer: LeftDrawer(),
+        body: Padding(
+          padding: EdgeInsets.all(5),
+          child : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height : 10),
+              Text("Amount : ${item.fields.amount}"),
+              Text("Category : ${item.fields.category}"),
+              Text("Date Added : ${item.fields.dateAdded}"),
+              const SizedBox(height: 10),
+              Text("${item.fields.description}"),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.lightGreen),
+                    ),
+                    onPressed: (){
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(builder: (context) => ItemPage()));
+                    },
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ), 
+        )
+      );
+    }
+  }
   ```
-
-  - Mengubah fungsi tombol `Lihat Produk` pada `inventory_button.dart` agar melakukan redirection ke halaman `ProductPage` :
-
+  - ### Halaman ini dapat diakses dengan menekan salah satu item pada halaman daftar Item.
+  
+  - Membuat tombol untuk pergi ke halaman `detail_item.dart` pada `list_item.dart`:
   ```dart
-  ...
-  else if(item.name == "Your Inventory") {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductPage()));
-            }
-  ...
+  child: InkWell(
+    onTap: () => {
+      Navigator.push(
+        context, 
+        MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])))
+    },
+  )
   ```
   - ### Tampilkan seluruh atribut pada model item kamu pada halaman ini.
-   ```dart
-    ...
-    return ListView.builder(
-      itemCount: snapshot.data!.length,
-      itemBuilder: (_, index) => Container(
-              margin: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                  Text(
-                  "${snapshot.data![index].fields.name}",
-                  style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                  ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text("${snapshot.data![index].fields.amount}"),
-                    const SizedBox(height: 10),
-                  Text("${snapshot.data![index].fields.category}"),
-                  const SizedBox(height: 10),
-                  Text(
-                      "${snapshot.data![index].fields.description}")
-              ],
-              ),
-          ));
-    ...
+    ```dart
+    body: Padding(
+      padding: EdgeInsets.all(5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height : 10),
+          Text("Amount : ${item.fields.amount}"),
+          Text("Category : ${item.fields.category}"),
+          Text("Date Added : ${item.fields.dateAdded}"),
+          const SizedBox(height: 10),
+          Text("${item.fields.description}"),
+        ],
+      )
+    )
     ```
-
   - ### Tambahkan tombol untuk kembali ke halaman daftar item.
+  ```dart
+    child: ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor:
+            MaterialStateProperty.all(Colors.lightGreen),
+      ),
+      onPressed: (){
+        Navigator.push(
+          context, 
+          MaterialPageRoute(builder: (context) => ItemPage()));
+      },
+        child: const Text(
+        "Back",
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+  ```
 
 
 </details>

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:lontongistic/screens/add_item_form.dart';
-import 'package:lontongistic/screens/list_product.dart';
+import 'package:lontongistic/screens/list_item.dart';
 import 'package:lontongistic/screens/login.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +39,7 @@ class InventoryCard extends StatelessWidget {
             Navigator.push(context, MaterialPageRoute(builder: (context) => const AddItemFormPage()));
           }
           else if(item.name == "Your Inventory") {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemPage()));
           }
           else if (item.name == "Logout") {
             final response = await request.logout(

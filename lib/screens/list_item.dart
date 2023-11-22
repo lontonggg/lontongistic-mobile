@@ -3,18 +3,19 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:lontongistic/models/product.dart';
+import 'package:lontongistic/models/item.dart';
+import 'package:lontongistic/screens/detail_item.dart';
 import 'package:lontongistic/widgets/left_drawer.dart';
 
-class ProductPage extends StatefulWidget {
-    const ProductPage({Key? key}) : super(key: key);
+class ItemPage extends StatefulWidget {
+    const ItemPage({Key? key}) : super(key: key);
 
     @override
-    _ProductPageState createState() => _ProductPageState();
+    _ItemPageState createState() => _ItemPageState();
 }
 
-class _ProductPageState extends State<ProductPage> {
-Future<List<Product>> fetchProduct() async {
+class _ItemPageState extends State<ItemPage> {
+Future<List<Item>> fetchitem() async {
     var url = Uri.parse(
         'https://reyhan-zada-tugas.pbp.cs.ui.ac.id/json/');
     var response = await http.get(
@@ -25,25 +26,25 @@ Future<List<Product>> fetchProduct() async {
     // melakukan decode response menjadi bentuk json
     var data = jsonDecode(utf8.decode(response.bodyBytes));
 
-    // melakukan konversi data json menjadi object Product
-    List<Product> list_product = [];
+    // melakukan konversi data json menjadi object item
+    List<Item> list_item = [];
     for (var d in data) {
         if (d != null) {
-            list_product.add(Product.fromJson(d));
+            list_item.add(Item.fromJson(d));
         }
     }
-    return list_product;
+    return list_item;
 }
 
 @override
 Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-        title: const Text('Product'),
+        title: const Text('Item'),
         ),
         drawer: const LeftDrawer(),
         body: FutureBuilder(
-            future: fetchProduct(),
+            future: fetchitem(),
             builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.data == null) {
                     return const Center(child: CircularProgressIndicator());
@@ -52,7 +53,7 @@ Widget build(BuildContext context) {
                     return const Column(
                         children: [
                         Text(
-                            "Tidak ada data produk.",
+                            "There's no item.",
                             style:
                                 TextStyle(color: Color(0xff59A5D8), fontSize: 20),
                         ),
@@ -66,26 +67,28 @@ Widget build(BuildContext context) {
                                 margin: const EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 12),
                                 padding: const EdgeInsets.all(20.0),
-                                child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                    Text(
-                                    "${snapshot.data![index].fields.name}",
-                                    style: const TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
+                                child: InkWell(
+                                  onTap: () => {
+                                    Navigator.push(
+                                      context, 
+                                      MaterialPageRoute(builder: (context) => DetailItem(snapshot.data![index])))
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                        Text(
+                                        "${snapshot.data![index].fields.name}",
+                                        style: const TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                        ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text("Amount : ${snapshot.data![index].fields.amount}"),
+                                    ],
                                     ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text("${snapshot.data![index].fields.amount}"),
-                                     const SizedBox(height: 10),
-                                    Text("${snapshot.data![index].fields.category}"),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                        "${snapshot.data![index].fields.description}")
-                                ],
-                                ),
+                                )
                             ));
                     }
                 }
